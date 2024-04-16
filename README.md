@@ -1,73 +1,155 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+# PaletteHQ Technical test
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+A simple API to manage teams and their members developped using NestJS and PostgreSQL on Docker.
+
+This project follows the Clean Architecture Principles.
+
+```js
++-- dist // Source build
++-- src
+|   +-- application // API / Presentation Layer 
+|   |   +-- controllers // Controllers
+|   |   +-- decorators // Custom Decorators
+|   |   +-- dto // DTO (Data Transfer Object) Schema, Validation
+|   +-- domain // Domain / Business Layer
+|   |   +-- entities // Entities manipulated by the Domain and stored by the Infrastructure layer
+|   |   +-- repositories // Interfaces of repositories used by the usecases
+|   |   +-- usecases // Usecases containing the business logic
+|   +-- infrastructure // Layer with external connection 
+|   |   +-- repositoriesImpl // Implementation of repositories
+|   +-- shared // Shared Nest Objects
+```
 
 ## Installation
+1. Clone this repository:
+  ```bash
+    git clone https://github.com/ksavidetove/Palette
+    cd Palette
+  ```
 
-```bash
-$ npm install
+2. Install the dependancies
+  ```bash
+  $ npm i
+  ```
+
+3. Using Docker, spin up a PostgreSQL instance
+  ```bash
+  $ docker-compose up
+  ```
+4. Configure the necessary environment variables. Copy the `.env.example` file provided at the root of the project into a `.env` file
+
+5. Start the server
+  ```bash
+  $ npm start
+  ```
+
+## REST Api
+
+A REST API is available after the start of the server at
+```
+http://localhost:3000
 ```
 
-## Running the app
+### Teams
+#### - Create a Team
+- **Endpoint:** `POST /team`
+- **Description:** Create a new team with a provided `name` and store it in DB
+- **Parameters:**
+  - `name` (body): The name of the Team to create
 
-```bash
-# development
-$ npm run start
+#### - Get a Team
+- **Endpoint:** `GET /team/:id`
+- **Description:** Retrieve the details of the team matching the provided `id` in DB
+- **Parameters:**
+  - `id` (parameter): The id of the team to delete
 
-# watch mode
-$ npm run start:dev
+#### - List / Search Teams
+- **Endpoint:** `GET /team`
+- **Description:** Return all the teams matching the provided `name` and/or `id` in DB
+- **Parameters:**
+  - `name` (query string): The name of the Team(s) to find
+  - `id` (query string): The id of the team to find
 
-# production mode
-$ npm run start:prod
-```
+#### - Update a Team
+- **Endpoint:** `PUT /team/:id`
+- **Description:** Update the team name matching the provided `id` in DB
+- **Parameters:**
+  - `id` (parameter): The id of the team to update
+  - `name` (body): The new name of the team
+
+#### - Delete a Team
+- **Endpoint:** `DELETE /team/:id`
+- **Description:** Delete the team matching the provided `id` in DB
+- **Parameters:**
+  - `id` (parameter): The id of the team to delete
+  
+#### - Add Members to a Team
+- **Endpoint:** `Post /team/:id/addMembers`
+- **Description:** Add members to the team matching the provided `id` in DB
+- **Parameters:**
+  - `id` (parameter): The id of the team to update
+  - `ids` (body): The ids of the members to add. They must exists in DB
+
+#### - Remove Members from a Team
+- **Endpoint:** `Post /team/:id/removeMembers`
+- **Description:** Remove members from the team matching the provided `id` in DB
+- **Parameters:**
+  - `id` (parameter): The id of the team to update
+  - `ids` (body): The ids of the members to remove
+  
+#### - Add a Sub-Team to a Team
+- **Endpoint:** `Get /team/:id/linkTo/:parentId`
+- **Description:** Link a sub-team from to another team
+- **Parameters:**
+  - `id` (parameter): The id of the team to update
+  - `parentId` (body): The ids of the members to remove
+
+#### - Remove a Sub-Team from a Team
+- **Endpoint:** `Get /team/:id/unlink`
+- **Description:** Remove a sub-team matching the provided `id` in DB from it's parent 
+- **Parameters:**
+  - `id` (parameter): The id of the sub-team
+
+### Members
+#### - Create a Member
+- **Endpoint:** `POST /member`
+- **Description:** Create a new member with a provided `name` and store it in DB
+- **Parameters:**
+  - `name` (body): The name of the member to create
+
+#### - Get a Member
+- **Endpoint:** `GET /member/:id`
+- **Description:** Retrieve the details of the member matching the provided `id` in DB
+- **Parameters:**
+  - `id` (parameter): The id of the member to delete
+
+#### - List / Search Members
+- **Endpoint:** `GET /member`
+- **Description:** Return all the members matching the provided `name` and/or `id` in DB
+- **Parameters:**
+  - `name` (query string): The name of the member(s) to find
+  - `id` (query string): The id of the member to find
+
+
+#### - Update a Member
+- **Endpoint:** `PUT /member/:id`
+- **Description:** Update the member name matching the provided `id` in DB
+- **Parameters:**
+  - `id` (parameter): The id of the member to update
+  - `name` (body): The new name of the member
+
+#### - Delete a Member
+- **Endpoint:** `DELETE /member/:id`
+- **Description:** Delete the member matching the provided `id` in DB
+- **Parameters:**
+  - `id` (parameter): The id of the member to delete
 
 ## Test
 
 ```bash
 # unit tests
 $ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
 ```
 
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
