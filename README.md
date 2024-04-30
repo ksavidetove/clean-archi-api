@@ -1,4 +1,4 @@
-# PaletteHQ Technical test
+# Team API
 
 ## Description
 
